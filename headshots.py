@@ -2,7 +2,7 @@ from picamera2 import Picamera2, Preview
 import cv2
 import os
 
-name = 'jessica'
+name = 'Jessica'
 save_dir = os.path.join("dataset", name)
 os.makedirs(save_dir, exist_ok=True)
 
