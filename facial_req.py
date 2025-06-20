@@ -6,6 +6,14 @@ import face_recognition
 import pickle
 import time
 
+from gpiozero import Servo
+from time import sleep
+
+import threading
+
+# Create servo on GPIO 17
+servo_motor = Servo(17)  # Requires pigpiod to be running!
+
 # Load encodings
 print("[INFO] loading encodings...")
 with open("encodings.pickle", "rb") as f:
@@ -21,6 +29,32 @@ time.sleep(1)
 
 print("[INFO] running facial recognition...")
 currentname = "unknown"
+
+
+
+
+pos = 0
+
+def servo_control():
+            global pos
+            print (pos)
+            if (pos == 0):
+                print("Right")
+                servo_motor.max()
+                pos = 1
+                sleep(1)
+            
+            else:
+                print("Left")
+                servo_motor.min()
+                pos = 0
+                sleep(1)
+
+            sleep(0.5)  # short pulse
+            servo_motor.mid()  # return to center
+
+
+
 
 while True:
     frame = picam2.capture_array()
@@ -90,6 +124,9 @@ while True:
         if (centerx < 50 and centerx > -50 and centery < 50 and centery > -50 ):
             cv2.putText(frame, "IN THE CENTER WOOOO!!!", (left, bottom + 50), cv2.FONT_HERSHEY_SIMPLEX,
                         0.5, (255, 255, 0), 1)
+            thread = threading.Thread(target=servo_control)
+            thread.start()
+            
 
     # Show the frame
     cv2.imshow("Facial Recognition", frame)
