@@ -3,7 +3,7 @@ from picamera2 import Picamera2
 import os
 import time
 
-name = 'Jessuca'  # Replace with your name
+name = 'Jessica'  # Replace with your name
 
 # Create dataset directory if it doesn't exist
 save_dir = f"dataset/{name}"

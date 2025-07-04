@@ -30,9 +30,6 @@ time.sleep(1)
 print("[INFO] running facial recognition...")
 currentname = "unknown"
 
-
-
-
 pos = 0
 
 def servo_control():
@@ -48,13 +45,10 @@ def servo_control():
                 print("Left")
                 servo_motor.min()
                 pos = 0
-                sleep(1)
+                #sleep(1)
 
             sleep(0.5)  # short pulse
             servo_motor.mid()  # return to center
-
-
-
 
 while True:
     frame = picam2.capture_array()
