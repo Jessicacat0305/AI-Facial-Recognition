@@ -1,0 +1,1 @@
+source ~/myenv/bin/activate && cd AI-Facial-Recognition/ && python3 ~/AI-Facial-Recognition/fullbody+face.py

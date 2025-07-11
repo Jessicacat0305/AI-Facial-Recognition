@@ -5,43 +5,55 @@ import cv2
 import face_recognition
 import pickle
 import time
-from gpiozero import Servo
+
+from gpiozero import Motor
+
 from time import sleep
 import numpy as np
 import tflite_runtime.interpreter as tflite
 
 # --- Servo Setup ---
-servo_motor = Servo(17)
-pos = None  # None = unknown, 'left', 'right', 'center'
-last_move_time = 0
-MOVE_COOLDOWN = 1.0  # seconds between servo moves
+pos = ""  # None = unknown, 'left', 'right', 'center'
 
+left_motor = Motor(forward=22, backward=17)
+right_motor = Motor(forward=8, backward=27)  # <-- Add this line to define right_motor
+
+# Set speed 0 to 1
+left_motor.forward(1)
+right_motor.forward(1)
+
+MOVE_COOLDOWN = 2  # seconds
+last_move_time = 0 
 def servo_control(direction):
     global pos
     print(f"Requested servo move: {direction} | Current pos: {pos}")
 
     if direction == pos:
         print("Servo already in desired position.")
+        left_motor.forward(1)
+        right_motor.forward(1)
         return
 
     if direction == "right":
         print("Turning Right")
-        servo_motor.max()
         pos = "right"
+        left_motor.forward(1)
+        right_motor.forward(1)
     elif direction == "left":
         print("Turning Left")
-        servo_motor.min()
         pos = "left"
+        left_motor.forward(1)
+        right_motor.forward(1)
     elif direction == "center":
         print("Centering Servo")
-        servo_motor.mid()
         pos = "center"
+        left_motor.forward(1)
+        right_motor.forward(1)
     else:
         print("Invalid servo direction:", direction)
         return
 
     sleep(0.5)  # let servo move
-    servo_motor.mid()  # return to center after move
     print("Servo centered")
 
 # --- Load Facial Encodings ---
