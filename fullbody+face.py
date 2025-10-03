@@ -16,45 +16,42 @@ import tflite_runtime.interpreter as tflite
 pos = ""  # None = unknown, 'left', 'right', 'center'
 
 left_motor = Motor(forward=22, backward=17)
-right_motor = Motor(forward=8, backward=27)  # <-- Add this line to define right_motor
+right_motor = Motor(forward=5, backward=27)
 
-# Set speed 0 to 1
-left_motor.forward(1)
-right_motor.forward(1)
+right_motor_inverted = True
 
 MOVE_COOLDOWN = 2  # seconds
 last_move_time = 0 
-def servo_control(direction):
+
+def servo_control(direction, speed=1):
     global pos
-    print(f"Requested servo move: {direction} | Current pos: {pos}")
-
     if direction == pos:
-        print("Servo already in desired position.")
-        left_motor.forward(1)
-        right_motor.forward(1)
-        return
+        return  # already in position
 
+    print(f"Moving {direction} at speed {speed}")
     if direction == "right":
-        print("Turning Right")
-        pos = "right"
-        left_motor.forward(1)
-        right_motor.forward(1)
+        left_motor.forward(speed)
+        if right_motor_inverted:
+            right_motor.backward(speed)
+        else:
+            right_motor.forward(speed)
     elif direction == "left":
-        print("Turning Left")
-        pos = "left"
-        left_motor.forward(1)
-        right_motor.forward(1)
+        left_motor.backward(speed)
+        if right_motor_inverted:
+            right_motor.forward(speed)
+        else:
+            right_motor.backward(speed)
     elif direction == "center":
-        print("Centering Servo")
-        pos = "center"
-        left_motor.forward(1)
-        right_motor.forward(1)
+        left_motor.stop()
+        right_motor.stop()
     else:
-        print("Invalid servo direction:", direction)
+        print("Invalid direction")
         return
 
-    sleep(0.5)  # let servo move
-    print("Servo centered")
+    sleep(0.5)
+    left_motor.stop()
+    right_motor.stop()
+    pos = direction
 
 # --- Load Facial Encodings ---
 print("[INFO] Loading facial encodings...")
@@ -131,7 +128,7 @@ while True:
 
         frame_center_x = frame.shape[1] // 2
         offset_x = mid_hip_x - frame_center_x
-
+ 
         now = time.time()
         if now - last_move_time > MOVE_COOLDOWN:
             if offset_x < 30:
